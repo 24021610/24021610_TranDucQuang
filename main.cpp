@@ -7,6 +7,7 @@
 int main(int argc, char *argv[])
 {
      Graphics graphics;
+
      ScrollingBackground background;
      Mouse mouse;
 
@@ -19,23 +20,22 @@ int main(int argc, char *argv[])
      background.setTexture(graphics.loadTexture("ahaha.PNG"));
 
     SDL_Event event;
-    while(true){
+while (true) {
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) graphics.sdlQuit();
+        if (event.type == SDL_KEYDOWN) {
+            if (event.key.keysym.sym == SDLK_w) mouse.jump();
+        }
+    }
 
-        while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT) graphics.sdlQuit();
+    SDL_RenderClear(graphics.renderer);
+    graphics.renderBackground(background);
+    mouse.move();
+    renderModel(mouse, graphics);
+    graphics.presentScene();
 
-            if(event.type == SDL_KEYDOWN){
-                if(event.key.keysym.sym == SDLK_w) mouse.jump();
-                    }
+    SDL_Delay(16);
+}
 
-            SDL_RenderClear(graphics.renderer);
-            graphics.renderBackground(background);
-            renderModel(mouse, graphics);
-            mouse.move();
-            graphics.presentScene();
-            SDL_Delay(1);
-                                    }
-
-            }
     return 0;
 }

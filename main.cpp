@@ -2,48 +2,56 @@
 #include <SDL.h>
 #include "graphics.h"
 #include "header.h"
-using namespace std;
+#include "logic.h"
 
 
-int main(int argc, char* argv[])
+
+int main(int argc, char *argv[])
 {
-    Graphics graphics;
-    graphics.init();
-    SDL_Rect rect;
-    rect.x=100;
-    rect.y=100;
-    rect.h=100;
-    rect.w=100;
-    SDL_SetRenderDrawColor(graphics.renderer, 255, 255, 255, 0 );
-    SDL_RenderFillRect(graphics.renderer, &rect);
-    SDL_RenderPresent(graphics.renderer);
-    SDL_Texture* texture = graphics.loadTexture("img.PNG");
+     Graphics graphics;
+     ScrollingBackground background;
+     object spike;
+     Mouse mouse;
+
+     graphics.initSDL();
+
+     mouse.x=100;
+     mouse.y=100;
+
+     spike.x = 400;
+     spike.y=400;
+
+     mouse.texture = graphics.loadTexture ("Model.PNG");
+     background.setTexture(graphics.loadTexture("ahaha.PNG"));
+     spike.texture = graphics.loadTexture ("spike.PNG");
+
     SDL_Event event;
-    int x,y;
-     while (true) {
-        SDL_GetMouseState(&x, &y);
-        cerr << x << ", " << y << endl;
+    while(true){
 
-        SDL_PollEvent(&event);
-        switch (event.type) {
-            case SDL_QUIT:
-                 exit(0);
-                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                 cerr << "Down at (" << x << ", " << y << ")\n";
-                 break;
-            case SDL_MOUSEBUTTONUP:
-                 cerr << "Up at (" << x << ", " << y << ")\n";
-                 break;
+        while(SDL_PollEvent(&event)){
+            if(event.type == SDL_QUIT) graphics.sdlQuit();
 
+            const Uint8* currentKeyState = SDL_GetKeyboardState(NULL);
+            if (currentKeyState[SDL_SCANCODE_LEFT]) mouse.turnWest();
+            if(currentKeyState[SDL_SCANCODE_RIGHT]) mouse.turnEast();
+            if(currentKeyState[SDL_SCANCODE_SPACE]) mouse.jump();
+
+            SDL_RenderClear(graphics.renderer);
+            graphics.renderBackground(background);
+            background.scroll(1);
+            renderModel(mouse, graphics);
+            renderSpike(spike, graphics);
+            mouse.move();
+            graphics.presentScene();
+            SDL_Delay(1);
         }
-        SDL_Delay(80);
+
     }
-
-
-
-
-    graphics.waitUntilKeyPressed();
-    graphics.sdlQuit();
     return 0;
 }
+
+
+
+
+
+

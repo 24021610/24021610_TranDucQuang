@@ -40,25 +40,21 @@ struct Mouse {
     }
 
     void move() {
-        if(y < ground) {
-            dy += gravity;
-        }
-        else {
-            y = ground;
-            dy = 0;
-        }
-        x += speed;
-        y += dy;
-        dx=0;
-    }
+    dy += gravity;   
+    y += dy;         
+    x += speed;   
 
-    void jump() {
-        if(!isJumping){
-        dx = 0;
-        dy -=speed;
-        isJumping = true;
-        }
+    if (y >= ground) {  
+        y = ground;
+        dy = 0;     
     }
+}
+
+void jump() {
+    if (y == ground) {  
+        dy = -20;       
+    }
+}
 
 };
 #endif // GAMELOGIC

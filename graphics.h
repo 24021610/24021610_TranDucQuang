@@ -96,12 +96,5 @@ void renderModel(const Mouse& mouse, const Graphics& graphics){
     SDL_RenderCopy(graphics.renderer, mouse.texture, NULL, &rect );
 }
 
-void renderSpike (const object& spike, const Graphics& graphics){
-    SDL_Rect rect = spike.rect;
-    rect.x = spike.x;
-    rect.y = spike.y;
-    SDL_QueryTexture(spike.texture, NULL, NULL, &rect.w, &rect.h);
-    SDL_RenderCopy(graphics.renderer, spike.texture, NULL, &rect );
-}
 
 #endif // _GRAPHICS__H

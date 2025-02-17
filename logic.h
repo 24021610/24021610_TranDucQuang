@@ -1,64 +1,69 @@
 #ifndef GAMELOGIC
 #define GAMELOGIC
-#include <iostream>
 #include <SDL.h>
 #include "graphics.h"
-#include "header.h"
 
+#define INITIAL_SPEED 10
+#define GRAVITY 5
+#define GROUND 330
+#define OBJECT_SIZE 60
 
-struct Tictactoe{
-    char board[BOARD_SIZE][BOARD_SIZE];
-    char nextMove = O_CELL;
-    char currentMove;
-
-void init(){
-    for(int i=0; i< BOARD_SIZE; i++){
-        for (int j = 0; j <BOARD_SIZE; j++){
-            board[i][j] = EMPTY_CELL;
-        }
-    }
+bool inside(int x, int y, SDL_Rect &rect){
+    return (x > rect.x) && (y>rect.y) && (x < rect.x + rect.w) && (y< rect.y + rect.h);
 }
 
-void move(int row, int col){
-    if (row >=0 && col >=0 && row<= BOARD_SIZE && col <= BOARD_SIZE){
-        if (board[row][col] != EMPTY_CELL) nextMove = currentMove;
-        board[row][col] = nextMove;
-        currentMove = nextMove;
-        nextMove = (nextMove == O_CELL)? X_CELL : O_CELL;
-    }
-}
-void newgame(){
-    memset(board, ' ', sizeof(board));
+bool overlap(SDL_Rect &r1, SDL_Rect &r2){
+return inside(r1.x, r1.y, r2) || inside(r1.x + r1.w, r1.y, r2) ||
+            inside(r1.x, r1.y+r1.h, r2) || inside(r1.x+r1.w, r1.y+r1.h, r2);
 }
 
-bool winCondition(){
-    int directions[4][2] = {{1, 0}, {0, 1}, {1, 1}, {1, -1}};
-    for(int i=0; i< BOARD_SIZE; i++){
-        for(int j=0; j<BOARD_SIZE; j++){
-            if (board[i][j] == EMPTY_CELL) continue;
 
-
-                    for(int d=0; d<4; d++){
-                        int dx = directions[d][0];
-                        int dy = directions[d][1];
-                        int cnt=1;
-
-                        for(int step =1; step<5; step++){
-                            int x = i + step*dx;
-                            int y = j+ step*dy;
-                            if(x >= BOARD_SIZE || y<0 || y>= BOARD_SIZE || board[x][y] != currentMove) break;
-                            cnt ++;
-                        }
-                        if (cnt==5) {
-                        return true;
-                        break;
-                    }
-                    }
-                }
-
-        }
-        return false;
-    }
+struct object{
+    SDL_Rect rect;
+    SDL_Texture* texture;
+    int x,y;
 };
 
-#endif // LOGIC
+struct Mouse {
+    int x, y;
+    SDL_Rect rect;
+
+    int dx = 0, dy = 0;
+    int speed = INITIAL_SPEED;
+    int gravity = GRAVITY;
+    int ground = GROUND;
+    SDL_Texture* texture;
+
+    void loadTexture(SDL_Texture* _texture){
+        texture = _texture;
+    }
+
+    void move() {
+        x += dx;
+        y += dy;
+        dx=0;
+
+        if (y >= ground) {
+            y = ground;
+            dy = 0;
+        } else {
+            dy += gravity;
+        }
+    }
+
+    void jump() {
+        dx = 0;
+        dy -=speed;
+    }
+
+    void turnWest() {
+        dy = 0;
+        dx = -speed;
+    }
+    void turnEast() {
+        dy = 0;
+        dx = speed;
+    }
+
+};
+#endif // GAMELOGIC

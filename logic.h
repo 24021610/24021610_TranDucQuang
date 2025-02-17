@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include "graphics.h"
 
-#define INITIAL_SPEED 10
+#define INITIAL_SPEED 2
 #define GRAVITY 5
 #define GROUND 330
 #define OBJECT_SIZE 60
@@ -32,6 +32,7 @@ struct Mouse {
     int speed = INITIAL_SPEED;
     int gravity = GRAVITY;
     int ground = GROUND;
+    bool isJumping = false;
     SDL_Texture* texture;
 
     void loadTexture(SDL_Texture* _texture){
@@ -39,30 +40,24 @@ struct Mouse {
     }
 
     void move() {
-        x += dx;
-        y += dy;
-        dx=0;
-
-        if (y >= ground) {
-            y = ground;
-            dy = 0;
-        } else {
+        if(y < ground) {
             dy += gravity;
         }
+        else {
+            y = ground;
+            dy = 0;
+        }
+        x += speed;
+        y += dy;
+        dx=0;
     }
 
     void jump() {
+        if(!isJumping){
         dx = 0;
         dy -=speed;
-    }
-
-    void turnWest() {
-        dy = 0;
-        dx = -speed;
-    }
-    void turnEast() {
-        dy = 0;
-        dx = speed;
+        isJumping = true;
+        }
     }
 
 };

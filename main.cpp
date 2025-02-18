@@ -7,35 +7,49 @@
 int main(int argc, char *argv[])
 {
      Graphics graphics;
-
      ScrollingBackground background;
-     Mouse mouse;
+     Player player;
+     Spike spike;
 
      graphics.initSDL();
 
-     mouse.x=100;
-     mouse.y=100;
+     player.x=100;
+     player.y=100;
+     spike.x = 900;
+     spike.y = 400;
 
-     mouse.texture = graphics.loadTexture ("Model.PNG");
-     background.setTexture(graphics.loadTexture("ahaha.PNG"));
+
+
+     player.texture = graphics.loadTexture ("Model.PNG");
+     background.setTexture(graphics.loadTexture("Second_Stage.JPG"));
+     spike.texture = graphics.loadTexture ("spike.PNG");
+
+
 
     SDL_Event event;
-while (true) {
+    while (true) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) graphics.sdlQuit();
+
         if (event.type == SDL_KEYDOWN) {
-            if (event.key.keysym.sym == SDLK_w) mouse.jump();
+            if (event.key.keysym.sym == SDLK_SPACE) player.jump();
         }
     }
 
     SDL_RenderClear(graphics.renderer);
+
+    if (player.x > 350) {
+        background.scroll(INITIAL_SPEED);
+    }
     graphics.renderBackground(background);
-    mouse.move();
-    renderModel(mouse, graphics);
+    graphics.renderModel(player);
+    graphics.renderSpike(spike);
+    player.move();
+    spike.move();
     graphics.presentScene();
+    if (Side_Collision(player, spike)) graphics.sdlQuit();
 
     SDL_Delay(16);
 }
-
     return 0;
 }

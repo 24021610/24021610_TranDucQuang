@@ -78,6 +78,23 @@ struct Graphics {
         renderTexture(background.texture, background.scrollingOffset - background.width, 0);
     }
 
+    void renderModel(const Player& player){
+    SDL_Rect rect;
+    rect.x = player.x;
+    rect.y = player.y;
+    SDL_QueryTexture(player.texture, NULL, NULL, &rect.w, &rect.h);
+    SDL_RenderCopy(renderer, player.texture, NULL, &rect );
+}
+
+    void renderSpike(const Spike& spike){
+    SDL_Rect rect;
+    rect.x = spike.x;
+    rect.y = spike.y;
+    SDL_QueryTexture(spike.texture, NULL, NULL, &rect.w, &rect.h);
+    SDL_RenderCopy(renderer, spike.texture, NULL, &rect );
+    }
+
+
 
     void sdlQuit(){
             SDL_DestroyRenderer(renderer);
@@ -88,13 +105,10 @@ struct Graphics {
     }
 };
 
-void renderModel(const Mouse& mouse, const Graphics& graphics){
-    SDL_Rect rect;
-    rect.x = mouse.x;
-    rect.y = mouse.y;
-    SDL_QueryTexture(mouse.texture, NULL, NULL, &rect.w, &rect.h);
-    SDL_RenderCopy(graphics.renderer, mouse.texture, NULL, &rect );
-}
 
 
 #endif // _GRAPHICS__H
+
+
+
+

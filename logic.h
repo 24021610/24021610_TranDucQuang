@@ -3,28 +3,27 @@
 #include <SDL.h>
 #include "graphics.h"
 
-#define INITIAL_SPEED 2
-#define GRAVITY 5
-#define GROUND 330
+#define INITIAL_SPEED 7
+#define GRAVITY 1
+#define GROUND 370
 #define OBJECT_SIZE 60
 
 bool inside(int x, int y, SDL_Rect &rect){
     return (x > rect.x) && (y>rect.y) && (x < rect.x + rect.w) && (y< rect.y + rect.h);
 }
 
-bool overlap(SDL_Rect &r1, SDL_Rect &r2){
-return inside(r1.x, r1.y, r2) || inside(r1.x + r1.w, r1.y, r2) ||
-            inside(r1.x, r1.y+r1.h, r2) || inside(r1.x+r1.w, r1.y+r1.h, r2);
-}
-
-
-struct object{
+struct Spike{
+    int x,y;
     SDL_Rect rect;
     SDL_Texture* texture;
-    int x,y;
+
+    void move(){
+        x -= INITIAL_SPEED/3;
+    }
+
 };
 
-struct Mouse {
+struct Player {
     int x, y;
     SDL_Rect rect;
 
@@ -40,21 +39,30 @@ struct Mouse {
     }
 
     void move() {
-    dy += gravity;   
-    y += dy;         
-    x += speed;   
+    if(x >350) speed=0;
 
-    if (y >= ground) {  
-        y = ground;
-        dy = 0;     
-    }
+    dy += gravity;
+    y += dy;
+    x += speed;
+    rect.x=x;
+    rect.y=y;
+
+     if(y < ground) {
+            dy += gravity;
+        }
+        else {
+            y = ground;
+            dy = 0;
+        }
 }
-
 void jump() {
-    if (y == ground) {  
-        dy = -20;       
+    if (y == ground) {
+        dy = -23;
     }
 }
-
 };
+
+bool Side_Collision(Player &player, Spike &spike){
+return (player.x + OBJECT_SIZE >= spike.x) && (player.y + OBJECT_SIZE >= spike.y);
+}
 #endif // GAMELOGIC

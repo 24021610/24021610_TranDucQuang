@@ -3,22 +3,23 @@
 #include <SDL.h>
 #include "graphics.h"
 
-#define INITIAL_SPEED 7
+#define INITIAL_SPEED 21
 #define GRAVITY 1
 #define GROUND 370
 #define OBJECT_SIZE 60
 
-bool inside(int x, int y, SDL_Rect &rect){
-    return (x > rect.x) && (y>rect.y) && (x < rect.x + rect.w) && (y< rect.y + rect.h);
-}
-
-struct Spike{
+struct Game_object{
     int x,y;
     SDL_Rect rect;
     SDL_Texture* texture;
 
+    Game_object(int _x, int _y){
+    x = _x;
+    y = _y;
+    }
+
     void move(){
-        x -= INITIAL_SPEED/3;
+        x -= 10;
     }
 
 };
@@ -26,6 +27,11 @@ struct Spike{
 struct Player {
     int x, y;
     SDL_Rect rect;
+
+    Player(int _x, int _y){
+    x = _x;
+    y = _y;
+    }
 
     int dx = 0, dy = 0;
     int speed = INITIAL_SPEED;
@@ -62,7 +68,11 @@ void jump() {
 }
 };
 
-bool Side_Collision(Player &player, Spike &spike){
-return (player.x + OBJECT_SIZE >= spike.x) && (player.y + OBJECT_SIZE >= spike.y);
+bool Side_Collision(Player &player, Game_object &spike){
+return (player.x + OBJECT_SIZE >= spike.x) && (player.x <= spike.x) && (player.y + OBJECT_SIZE >= spike.y) && player.y <= spike.y;
+}
+
+bool Top_Collision (Player &player, Game_object &spike){
+return (player.x >= spike.x) && (player.x  <= spike.x+OBJECT_SIZE) && (player.y + OBJECT_SIZE == spike.y) && player.y <spike.y;
 }
 #endif // GAMELOGIC

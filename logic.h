@@ -45,7 +45,7 @@ struct Player {
     }
 
     void move() {
-    if(x >350) speed=0;
+    if(x >225) speed=0;
 
     dy += gravity;
     y += dy;

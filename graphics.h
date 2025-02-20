@@ -46,6 +46,21 @@ struct Graphics {
         if (!IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG)) logErrorAndExit("Load Image: ", IMG_GetError());
     }
 
+     SDL_Texture* loadTexture(const char* filename){
+            SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
+            if (texture == nullptr) SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Load Texture: %s", IMG_GetError());
+            return texture;
+        }
+
+    SDL_Texture* loadTextureFromSurface(const char* filename){
+            SDL_Surface* surface = IMG_Load(filename);
+            if (surface == nullptr) SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Load Texture: %s", IMG_GetError());
+            SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 255, 255));
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+            return texture;
+        }
+
 
 	void prepareScene(SDL_Texture* texture){
             SDL_RenderClear(renderer);
@@ -58,13 +73,6 @@ struct Graphics {
         SDL_RenderClear(renderer);
 
         }
-
-    SDL_Texture* loadTexture(const char* filename){
-            SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
-            if (texture == nullptr) SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "Load Texture: %s", IMG_GetError());
-            return texture;
-        }
-
     void renderTexture(SDL_Texture *texture, int x, int y){
         SDL_Rect dest;
         dest.x = x;
@@ -86,15 +94,13 @@ struct Graphics {
     SDL_RenderCopy(renderer, player.texture, NULL, &rect );
 }
 
-    void renderSpike(const Spike& spike){
+    void renderSpike(const Game_object& spike){
     SDL_Rect rect;
     rect.x = spike.x;
     rect.y = spike.y;
     SDL_QueryTexture(spike.texture, NULL, NULL, &rect.w, &rect.h);
     SDL_RenderCopy(renderer, spike.texture, NULL, &rect );
     }
-
-
 
     void sdlQuit(){
             SDL_DestroyRenderer(renderer);
@@ -104,8 +110,6 @@ struct Graphics {
 
     }
 };
-
-
 
 #endif // _GRAPHICS__H
 

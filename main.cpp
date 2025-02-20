@@ -8,21 +8,16 @@ int main(int argc, char *argv[])
 {
      Graphics graphics;
      ScrollingBackground background;
-     Player player;
-     Spike spike;
+     Player player(0,370);
+     Game_object spike(900,370);
+     Game_object square(3000,370);
 
      graphics.initSDL();
 
-     player.x=100;
-     player.y=100;
-     spike.x = 900;
-     spike.y = 400;
-
-
-
      player.texture = graphics.loadTexture ("Model.PNG");
      background.setTexture(graphics.loadTexture("Second_Stage.JPG"));
-     spike.texture = graphics.loadTexture ("spike.PNG");
+     spike.texture = graphics.loadTextureFromSurface ("spike.PNG");
+     square.texture = graphics.loadTexture("square.PNG");
 
 
 
@@ -38,16 +33,23 @@ int main(int argc, char *argv[])
 
     SDL_RenderClear(graphics.renderer);
 
-    if (player.x > 350) {
-        background.scroll(INITIAL_SPEED);
+    if (player.x > 225) {
+        background.scroll(5);
+        spike.move();
     }
     graphics.renderBackground(background);
     graphics.renderModel(player);
     graphics.renderSpike(spike);
+    graphics.renderSpike(square);
     player.move();
-    spike.move();
+    square.move();
     graphics.presentScene();
     if (Side_Collision(player, spike)) graphics.sdlQuit();
+    if (Top_Collision(player, square)){
+        while (player.x<=square.x && player.x+OBJECT_SIZE >= square.x){
+            player.ground = square.y;
+        }
+    }
 
     SDL_Delay(16);
 }

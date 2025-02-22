@@ -1,78 +1,68 @@
-#ifndef GAMELOGIC
-#define GAMELOGIC
-#include <SDL.h>
-#include "graphics.h"
+#ifndef GAMEMAP
+#define GAMEMAP
 
-#define INITIAL_SPEED 21
-#define GRAVITY 1
-#define GROUND 370
-#define OBJECT_SIZE 60
+#include "header.h"
+#include <stdfix.h>
 
-struct Game_object{
-    int x,y;
-    SDL_Rect rect;
-    SDL_Texture* texture;
+#define GAME_MAP_X 400
+#define GAME_MAP_Y 10
 
-    Game_object(int _x, int _y){
-    x = _x;
-    y = _y;
+
+struct Map{
+    int start_x, start_y, max_x, max_y;
+
+    int tile[GAME_MAP_Y][GAME_MAP_X];
+    char* filename;
+};
+
+struct GameMap{
+    Game_object tile_mat[40];
+    Map game_map;
+    FILE* fp = NULL;
+
+    void LoadMap(char* filename){
+        fopen_s(&fp, filename, "rb");
+
+        game_map.max_x = 0;
+        game_map.max_y = 0;
+
+    for (int i=0; i< GAME_MAP_Y; i++)
+        {
+        for(int j = 0; j<GAME_MAP_X; j++)
+            {
+            fscanf( fp, %d, &game_map.tile[i][j]);
+            int val = game_map.tile[i][j];
+                if(val >0){
+                    if (j > game_map.max_x) game_map.max_x = j;
+                    if (i > game_map.max_y) game_map.max_y = i;
+                        }
+            }
+        }
+
+        game_map.max_x = (game_map.max_x +1) * OBJECT_SIZE;
+        game_map.max_y = (game_map.max_y +1) * OBJECT_SIZE;
+
+        game_map.start_x = 0;
+        game_map.start_y = 0;
+
+        fclose(fp);
     }
 
-    void move(){
-        x -= 10;
+    void LoadTiles (Graphics &graphics)
+    {
+        FILE* fp = NULL;
+        char file_image[40];
+
+        for(int i=0; i< 40; i++)
+        {
+            sprintf_s(file_image, "Resources/%d.PNG", i);
+            fopen_s(&fp, file_image,"rb");
+            if(fp == NULL) continue;
+            fclose(fp);
+
+        }
     }
 
 };
 
-struct Player {
-    int x, y;
-    SDL_Rect rect;
-
-    Player(int _x, int _y){
-    x = _x;
-    y = _y;
-    }
-
-    int dx = 0, dy = 0;
-    int speed = INITIAL_SPEED;
-    int gravity = GRAVITY;
-    int ground = GROUND;
-    bool isJumping = false;
-    SDL_Texture* texture;
-
-    void loadTexture(SDL_Texture* _texture){
-        texture = _texture;
-    }
-
-    void move() {
-    if(x >225) speed=0;
-
-    dy += gravity;
-    y += dy;
-    x += speed;
-    rect.x=x;
-    rect.y=y;
-
-     if(y < ground) {
-            dy += gravity;
-        }
-        else {
-            y = ground;
-            dy = 0;
-        }
-}
-void jump() {
-    if (y == ground) {
-        dy = -23;
-    }
-}
-};
-
-bool Side_Collision(Player &player, Game_object &spike){
-return (player.x + OBJECT_SIZE >= spike.x) && (player.x <= spike.x) && (player.y + OBJECT_SIZE >= spike.y) && player.y <= spike.y;
-}
-
-bool Top_Collision (Player &player, Game_object &spike){
-return (player.x >= spike.x) && (player.x  <= spike.x+OBJECT_SIZE) && (player.y + OBJECT_SIZE == spike.y) && player.y <spike.y;
-}
-#endif // GAMELOGIC
+#endif // GAMEMAP
